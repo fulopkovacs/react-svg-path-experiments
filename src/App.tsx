@@ -9,16 +9,16 @@ import CubicBezierControl from "./CubicBezierControl";
 function App() {
   const [quadraticBezierData, setQuadraticBezierData] =
     React.useState<QuadraticBezierProps>({
-      points: { start: [1, 5], end: [7, 5], control: [3, 1] },
+      points: { start: [11, 11], end: [18.5, 11], control: [14, 6] },
     });
 
   const [cubicBezierData, setCubicBezierData] =
     React.useState<CubicBezierProps>({
       points: {
-        start: [1, 6],
-        end: [7, 3],
-        control1: [4, 1],
-        control2: [4, 7],
+        start: [1, 10],
+        end: [8, 8],
+        control1: [2.5, 5],
+        control2: [6, 16],
       },
     });
 
@@ -102,7 +102,7 @@ function App() {
       <h1>Quadratic and Cubic Bézier-curves</h1>
       <SvgImage
         ref={svgRef}
-        viewBox={[0, 0, 10, 10]}
+        viewBox={[0, 0, 20, 20]}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       >
