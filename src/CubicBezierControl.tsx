@@ -20,11 +20,11 @@ function CubicBezierControl(props: CubicBezierControlProps) {
     <g>
       <path
         className="control cubic"
-        d={`M ${props.points.start[0]} ${props.points.start[1]} L ${props.points.control1[0]} ${props.points.control1[1]}}`}
+        d={`M ${props.points.start[0]} ${props.points.start[1]} L ${props.points.control1[0]} ${props.points.control1[1]}`}
       />
       <path
         className="control cubic"
-        d={`M ${props.points.end[0]} ${props.points.end[1]} L ${props.points.control2[0]} ${props.points.control2[1]}}`}
+        d={`M ${props.points.end[0]} ${props.points.end[1]} L ${props.points.control2[0]} ${props.points.control2[1]}`}
       />
       {circles}
     </g>
