@@ -11,6 +11,8 @@
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
+    "@theatre/core": "^0.4.7",
+    "@theatre/studio": "^0.4.7",
     "@types/react": "^17.0.33",
     "@types/react-dom": "^17.0.10",
     "@vitejs/plugin-react": "^1.0.7",
@@ -18,4 +20,3 @@
     "vite": "^2.7.2"
   }
 }
-

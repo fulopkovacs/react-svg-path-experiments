@@ -5,11 +5,13 @@ import { QuadraticBezierProps } from "./QuadraticBezier";
 import QuadraticBezierControl from "./QuadraticBezierControl";
 import CubicBezier, { CubicBezierProps } from "./CubicBezier";
 import CubicBezierControl from "./CubicBezierControl";
+import studio from "@theatre/studio";
+import { getProject } from "@theatre/core";
 
 function App() {
   const [quadraticBezierData, setQuadraticBezierData] =
     React.useState<QuadraticBezierProps>({
-      points: { start: [11, 11], end: [18.5, 11], control: [14, 6] },
+      points: { start: [0, 7], end: [5, 7], control: [3, 3] },
     });
 
   const [cubicBezierData, setCubicBezierData] =
@@ -38,7 +40,28 @@ function App() {
 
   useEffect(() => {
     if (svgRef.current) ctm = svgRef.current.getScreenCTM();
-  });
+
+    studio.initialize();
+    const proj = getProject("Curves");
+    const quadraticBezierSheet = proj.sheet("curve", "quadratic");
+    const quadraticBezierObject = quadraticBezierSheet.object("curve", {
+      start: { x: 0, y: 7 },
+      end: { x: 5, y: 7 },
+      control: { x: 3, y: 3 },
+    });
+
+    quadraticBezierObject.onValuesChange(({ start, end, control }) => {
+      const newValues: QuadraticBezierProps = {
+        points: {
+          start: [start.x, start.y],
+          end: [end.x, end.y],
+          control: [control.x, control.y],
+        },
+      };
+
+      setQuadraticBezierData(newValues);
+    });
+  }, []);
 
   function handleMouseUp() {
     setOffset({ x: 0, y: 0 });
@@ -107,16 +130,10 @@ function App() {
         onMouseUp={handleMouseUp}
       >
         <QuadraticBezier points={quadraticBezierData.points} />
-        <CubicBezier points={cubicBezierData.points} />
         <QuadraticBezierControl
           points={quadraticBezierData.points}
           radius={0.5}
           selectNode={selectQuadraticBezierNode}
-        />
-        <CubicBezierControl
-          points={cubicBezierData.points}
-          radius={0.5}
-          selectNode={selectCubicBezierNode}
         />
       </SvgImage>
     </div>
