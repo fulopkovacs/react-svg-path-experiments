@@ -7,6 +7,7 @@ import CubicBezier, { CubicBezierProps } from "./CubicBezier";
 import CubicBezierControl from "./CubicBezierControl";
 import studio from "@theatre/studio";
 import { getProject } from "@theatre/core";
+import state from './state.json'
 
 function App() {
   const [quadraticBezierData, setQuadraticBezierData] =
@@ -23,6 +24,8 @@ function App() {
         control2: [6, 16],
       },
     });
+
+  const [showControlNodes, setControlNodesVisibility] = React.useState(true)
 
   const [selectedPoint, setSelectedPoint] = React.useState<{
     type: string;
@@ -42,15 +45,16 @@ function App() {
     if (svgRef.current) ctm = svgRef.current.getScreenCTM();
 
     studio.initialize();
-    const proj = getProject("Curves");
-    const quadraticBezierSheet = proj.sheet("curve", "quadratic");
+    const proj = getProject("Animated curves", {state});
+    const quadraticBezierSheet = proj.sheet("Curves", "Quadratic");
     const quadraticBezierObject = quadraticBezierSheet.object("curve", {
+      showControlNodes: showControlNodes,
       start: { x: 0, y: 7 },
       end: { x: 5, y: 7 },
       control: { x: 3, y: 3 },
     });
 
-    quadraticBezierObject.onValuesChange(({ start, end, control }) => {
+    quadraticBezierObject.onValuesChange(({ showControlNodes: showControlNodes, start, end, control }) => {
       const newValues: QuadraticBezierProps = {
         points: {
           start: [start.x, start.y],
@@ -58,7 +62,7 @@ function App() {
           control: [control.x, control.y],
         },
       };
-
+      setControlNodesVisibility(showControlNodes);
       setQuadraticBezierData(newValues);
     });
   }, []);
@@ -130,11 +134,11 @@ function App() {
         onMouseUp={handleMouseUp}
       >
         <QuadraticBezier points={quadraticBezierData.points} />
-        <QuadraticBezierControl
+        {showControlNodes && <QuadraticBezierControl
           points={quadraticBezierData.points}
           radius={0.5}
           selectNode={selectQuadraticBezierNode}
-        />
+          />}
       </SvgImage>
     </div>
   );
