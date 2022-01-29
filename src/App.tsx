@@ -6,8 +6,15 @@ import QuadraticBezierControl from "./QuadraticBezierControl";
 import CubicBezier, { CubicBezierProps } from "./CubicBezier";
 import CubicBezierControl from "./CubicBezierControl";
 import studio from "@theatre/studio";
-import { getProject } from "@theatre/core";
-import state from './state.json'
+import { getProject, ISheetObject } from "@theatre/core";
+import state from "./state.json";
+
+type IQuadraticBezierObject = ISheetObject<{
+  showControlNodes: boolean;
+  start: { x: number; y: number };
+  end: { x: number; y: number };
+  control: { x: number; y: number };
+}>;
 
 function App() {
   const [quadraticBezierData, setQuadraticBezierData] =
@@ -25,7 +32,7 @@ function App() {
       },
     });
 
-  const [showControlNodes, setControlNodesVisibility] = React.useState(true)
+  const [showControlNodes, setControlNodesVisibility] = React.useState(true);
 
   const [selectedPoint, setSelectedPoint] = React.useState<{
     type: string;
@@ -37,6 +44,9 @@ function App() {
     y: 0,
   });
 
+  const [quadraticBezierObject, setQuadraticBezierObject] =
+    React.useState<IQuadraticBezierObject>();
+
   const svgRef = React.createRef<SVGSVGElement>();
 
   let ctm: DOMMatrix | null;
@@ -45,26 +55,30 @@ function App() {
     if (svgRef.current) ctm = svgRef.current.getScreenCTM();
 
     studio.initialize();
-    const proj = getProject("Animated curves", {state});
+    const proj = getProject("Animated curves", { state });
     const quadraticBezierSheet = proj.sheet("Curves", "Quadratic");
-    const quadraticBezierObject = quadraticBezierSheet.object("curve", {
+    const initialQuadraticBezierObject = quadraticBezierSheet.object("curve", {
       showControlNodes: showControlNodes,
       start: { x: 0, y: 7 },
       end: { x: 5, y: 7 },
       control: { x: 3, y: 3 },
     });
 
-    quadraticBezierObject.onValuesChange(({ showControlNodes: showControlNodes, start, end, control }) => {
-      const newValues: QuadraticBezierProps = {
-        points: {
-          start: [start.x, start.y],
-          end: [end.x, end.y],
-          control: [control.x, control.y],
-        },
-      };
-      setControlNodesVisibility(showControlNodes);
-      setQuadraticBezierData(newValues);
-    });
+    initialQuadraticBezierObject.onValuesChange(
+      ({ showControlNodes: showControlNodes, start, end, control }) => {
+        const newValues: QuadraticBezierProps = {
+          points: {
+            start: [start.x, start.y],
+            end: [end.x, end.y],
+            control: [control.x, control.y],
+          },
+        };
+        setControlNodesVisibility(showControlNodes);
+        setQuadraticBezierData(newValues);
+      }
+    );
+
+    setQuadraticBezierObject(initialQuadraticBezierObject);
   }, []);
 
   function handleMouseUp() {
@@ -127,6 +141,20 @@ function App() {
   return (
     <div className="App">
       <h1>Quadratic and Cubic Bézier-curves</h1>
+      <button
+        id="annoying-button"
+        onClick={(e) => {
+          studio.transaction(({ set }) => {
+            console.log(quadraticBezierObject);
+            set(
+              quadraticBezierObject!.props.start.x,
+              quadraticBezierObject!.value.start.x + 1
+            );
+          });
+        }}
+      >
+        x+10
+      </button>
       <SvgImage
         ref={svgRef}
         viewBox={[0, 0, 20, 20]}
@@ -134,11 +162,13 @@ function App() {
         onMouseUp={handleMouseUp}
       >
         <QuadraticBezier points={quadraticBezierData.points} />
-        {showControlNodes && <QuadraticBezierControl
-          points={quadraticBezierData.points}
-          radius={0.5}
-          selectNode={selectQuadraticBezierNode}
-          />}
+        {showControlNodes && (
+          <QuadraticBezierControl
+            points={quadraticBezierData.points}
+            radius={0.5}
+            selectNode={selectQuadraticBezierNode}
+          />
+        )}
       </SvgImage>
     </div>
   );

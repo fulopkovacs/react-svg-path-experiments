@@ -38,3 +38,15 @@ path.control {
   stroke-width: 0.1px;
   stroke-dasharray: 0.3;
 }
+
+#annoying-button {
+  position: fixed;
+  height: 20px;
+  width: 100px;
+  stroke: red;
+  stroke-width: 2px;
+  font-size: 15px;
+  z-index: 10;
+  top: 0;
+  left: 40px;
+}
